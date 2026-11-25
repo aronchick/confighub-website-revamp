@@ -466,33 +466,23 @@ textarea {
 }
 
 .section-pad {
-  padding-top: clamp(64px, 7.5vw, 108px);
-  padding-bottom: clamp(64px, 7.5vw, 108px);
+  padding-top: clamp(76px, 9vw, 124px);
+  padding-bottom: clamp(76px, 9vw, 124px);
 }
 
 /* Hero Opening (Axiom Instrument-Stage Opening + Full-Width Live Workbench) */
 .hero-pad {
-  padding-top: clamp(40px, 5vw, 72px);
-  padding-bottom: clamp(48px, 5.5vw, 76px);
+  padding-top: clamp(52px, 6.5vw, 88px);
+  padding-bottom: clamp(56px, 6.5vw, 88px);
 }
 
-.hero-top-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.65fr);
-  gap: clamp(24px, 4vw, 56px);
-  align-items: end;
-  margin-bottom: clamp(28px, 3.5vw, 40px);
-}
-
-.hero-top-grid > *,
 .chapter-head > *,
 .workbench-split > *,
 .sandbox-grid > *,
 .contact-grid > *,
 .closing-split > *,
 .shared-matrix-2 > *,
-.ring-grid > *,
-.pain-row > * {
+.ring-grid > * {
   min-width: 0;
 }
 
@@ -500,28 +490,7 @@ textarea {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 26px;
-}
-
-.hero-aside-facts {
-  border-left: 1px solid var(--dark-rule-strong);
-  padding-left: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.hero-aside-item {
-  font-size: 0.875rem;
-  line-height: 1.48;
-  color: var(--dark-ink-secondary);
-}
-
-.hero-aside-item strong {
-  display: block;
-  color: var(--dark-ink);
-  font-weight: 600;
-  margin-bottom: 2px;
+  margin-top: 28px;
 }
 
 /* Machined Double-Rimmed Instrument Frame (Axiom Shell -> 6px Inset -> Well, Zero Shadow) */
@@ -1112,30 +1081,6 @@ textarea {
   display: block;
 }
 
-/* Editorial Reading World (Four Pains Ledger) */
-.pain-ledger {
-  border-top: 1px solid var(--paper-rule-strong);
-}
-
-.pain-row {
-  display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.05fr) minmax(0, 1.1fr);
-  gap: 28px;
-  padding: 28px 0;
-  border-bottom: 1px solid var(--paper-rule);
-  align-items: start;
-}
-
-.pain-title {
-  font-family: var(--font-display);
-  font-size: 1.45rem;
-  font-weight: 600;
-  letter-spacing: -0.025em;
-  line-height: 1.15;
-  margin: 0;
-  color: var(--paper-ink);
-}
-
 .col-caption {
   font-family: var(--font-mono);
   font-size: 0.7rem;
@@ -1144,17 +1089,6 @@ textarea {
   color: var(--paper-ink-muted);
   display: block;
   margin-bottom: 6px;
-}
-
-.pain-copy {
-  margin: 0;
-  font-size: 0.94rem;
-  line-height: 1.58;
-  color: var(--paper-ink-secondary);
-}
-
-.pain-copy-strong {
-  color: var(--paper-ink);
 }
 
 /* Reading-Stage Bank Quotation (Axiom 768px Centered Proof Stage) */
@@ -1462,7 +1396,6 @@ textarea {
 
 /* Responsive Breakpoints */
 @media (max-width: 1040px) {
-  .hero-top-grid,
   .chapter-head,
   .workbench-split,
   .sandbox-grid,
@@ -1470,24 +1403,9 @@ textarea {
     grid-template-columns: 1fr;
   }
 
-  .hero-aside-facts {
-    border-left: 0;
-    border-top: 1px solid var(--dark-rule-strong);
-    padding-left: 0;
-    padding-top: 18px;
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
-  }
-
   .sandbox-left {
     border-right: 0;
     border-bottom: 1px solid var(--dark-rule);
-  }
-
-  .pain-row {
-    grid-template-columns: 1fr;
-    gap: 14px;
   }
 
   .footer-grid {
@@ -1544,10 +1462,6 @@ textarea {
 }
 
 @media (max-width: 600px) {
-  .hero-aside-facts {
-    grid-template-columns: 1fr;
-  }
-
   .hero-actions .btn,
   .ring-controls .btn,
   .scenario-btn {

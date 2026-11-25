@@ -5,13 +5,13 @@ import {
   type RemediationStageIndex,
 } from '../data/workbenchData';
 
-type RingRolloutMode = 'ready' | 'ring0-ok' | 'ring1-isolated-rollback' | 'complete';
+type RingRolloutMode = 'ring0-ok' | 'ring1-rollback' | 'complete';
 
-const STAGE_LABELS: Array<{ num: string; title: string }> = [
-  { num: 'Step 01', title: 'Locate Exposed Fleet' },
-  { num: 'Step 02', title: 'Agent Drafts Targeted Fix' },
-  { num: 'Step 03', title: 'Gradual Canary Rollout' },
-  { num: 'Step 04', title: 'Audit Receipt & Proof' },
+const STAGES: Array<{ num: string; title: string }> = [
+  { num: '01', title: 'Locate' },
+  { num: '02', title: 'Target Fix' },
+  { num: '03', title: 'Canary Rings' },
+  { num: '04', title: 'Audit Receipt' },
 ];
 
 export function VulnWorkbench() {
@@ -27,14 +27,14 @@ export function VulnWorkbench() {
 
     const timer = window.setTimeout(() => {
       setLoading(false);
-    }, 170);
+    }, 160);
 
     return () => {
       window.clearTimeout(timer);
     };
   }, [loading]);
 
-  const activeScenario =
+  const active =
     REMEDIATION_SCENARIOS.find((item) => item.id === scenarioId) ?? REMEDIATION_SCENARIOS[0];
 
   const selectScenario = (nextId: RemediationScenarioId) => {
@@ -57,27 +57,11 @@ export function VulnWorkbench() {
     setLoading(true);
   };
 
-  const ring0Status = ringMode === 'ready' ? 'Pending' : 'Healthy · Patched';
-
-  const ring1Status =
-    ringMode === 'ready' || ringMode === 'ring0-ok'
-      ? 'Queued (observe 120s)'
-      : ringMode === 'ring1-isolated-rollback'
-        ? 'Halted · Auto-Rolled Back'
-        : 'Healthy · Patched';
-
-  const ring2Status =
-    ringMode === 'complete'
-      ? 'Healthy · Patched'
-      : ringMode === 'ring1-isolated-rollback'
-        ? 'Paused automatically (0 blast)'
-        : 'Waiting on Ring 1';
-
   return (
     <div className="instrument-shell" id="workbench" aria-label="Interactive vulnerability remediation workbench">
       <div className="instrument-well">
         <div className="instrument-toolbar">
-          <div className="scenario-bar" role="tablist" aria-label="Choose a vulnerability scenario">
+          <div className="scenario-bar" role="tablist" aria-label="Select vulnerability scenario">
             {REMEDIATION_SCENARIOS.map((item) => (
               <button
                 key={item.id}
@@ -92,11 +76,11 @@ export function VulnWorkbench() {
             ))}
           </div>
 
-          <span className="badge badge-dark-accent">{activeScenario.cveCode}</span>
+          <span className="badge badge-dark-accent">{active.cveCode}</span>
         </div>
 
         <div className="stage-rail" role="tablist" aria-label="Remediation workflow stages">
-          {STAGE_LABELS.map((item, idx) => {
+          {STAGES.map((item, idx) => {
             const typedIdx = idx === 0 ? 0 : idx === 1 ? 1 : idx === 2 ? 2 : 3;
 
             return (
@@ -108,106 +92,90 @@ export function VulnWorkbench() {
                 className={`stage-tab ${stage === typedIdx ? 'active' : ''}`}
                 onClick={() => selectStage(typedIdx)}
               >
-                <span className="stage-step-num">{item.num}</span>
+                <span className="stage-step-num">Step {item.num}</span>
                 <span className="stage-step-label">{item.title}</span>
               </button>
             );
           })}
         </div>
 
-        <div className="instrument-body">
+        <div className="instrument-body" style={{ minHeight: '280px' }}>
           {loading ? (
             <div className="skeleton-stack" aria-busy="true" aria-label="Loading stage output">
-              <div className="skeleton-dark" style={{ width: '82%' }} />
+              <div className="skeleton-dark" style={{ width: '80%' }} />
               <div className="skeleton-dark" style={{ width: '100%', height: '84px' }} />
-              <div className="skeleton-dark" style={{ width: '78%', height: '84px' }} />
-              <div className="skeleton-dark" style={{ width: '56%' }} />
+              <div className="skeleton-dark" style={{ width: '65%' }} />
             </div>
           ) : stage === 0 ? (
             <div className="workbench-split">
               <div>
-                <p style={{ margin: '0 0 12px', color: 'var(--dark-ink)', fontSize: '0.94rem' }}>
-                  <strong style={{ color: 'var(--accent-light)' }}>Scanner Input:</strong> {activeScenario.scannerInput}
+                <p style={{ margin: '0 0 10px', fontSize: '0.88rem', color: 'var(--dark-ink-secondary)' }}>
+                  <strong style={{ color: 'var(--accent-light)' }}>Input:</strong> {active.scannerInput}
                 </p>
 
                 <pre className="code-block-dark">
-                  <code>{`$ ${activeScenario.queryCommand}`}</code>
+                  <code>{`$ ${active.queryCommand}`}</code>
                 </pre>
 
-                <div style={{ overflowX: 'auto' }}>
-                  <table className="data-table-dark">
-                    <thead>
-                      <tr>
-                        <th>Cluster</th>
-                        <th>Exposure Tier</th>
-                        <th>Rendered Live Value</th>
-                        <th>Rollout Ring</th>
-                      </tr>
-                    </thead>
+                <table className="data-table-dark" style={{ marginBottom: 0 }}>
+                  <thead>
+                    <tr>
+                      <th>Cluster</th>
+                      <th>Tier</th>
+                      <th>Live Value</th>
+                      <th>Ring</th>
+                    </tr>
+                  </thead>
 
-                    <tbody>
-                      {activeScenario.targets.map((target) => (
-                        <tr key={target.cluster}>
-                          <td className="mono" style={{ color: 'var(--dark-ink)' }}>
-                            {target.cluster}
-                          </td>
-                          <td>{target.exposure}</td>
-                          <td className="mono">{target.currentValue}</td>
-                          <td>
-                            <span className="badge badge-dark-warn">{target.ring}</span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                  <tbody>
+                    {active.targets.map((target) => (
+                      <tr key={target.cluster}>
+                        <td className="mono" style={{ color: 'var(--dark-ink)' }}>
+                          {target.cluster}
+                        </td>
+                        <td>{target.tier}</td>
+                        <td className="mono">{target.liveValue}</td>
+                        <td>
+                          <span className="badge badge-dark-warn">{target.ring}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
 
               <div className="metric-well">
-                <div className="mono" style={{ fontSize: '2rem', fontWeight: 600, color: 'var(--dark-ink)', marginBottom: '6px' }}>
-                  {activeScenario.affectedWorkloads} units
+                <div className="mono" style={{ fontSize: '1.85rem', fontWeight: 600, color: 'var(--dark-ink)' }}>
+                  {active.affectedWorkloads} units
                 </div>
-                <p style={{ margin: '0 0 18px', fontSize: '0.88rem', color: 'var(--dark-ink-secondary)', lineHeight: 1.55 }}>
-                  Isolated across {activeScenario.affectedClusters} clusters in 0.4 seconds.{' '}
-                  {activeScenario.skippedClusters} unaffected clusters remain completely untouched, avoiding collateral
-                  restarts or fleet-wide churn.
+                <p style={{ margin: '6px 0 18px', fontSize: '0.86rem', color: 'var(--dark-ink-secondary)' }}>
+                  Across {active.affectedClusters} clusters. {active.skippedClusters} healthy clusters untouched.
                 </p>
-
                 <button type="button" className="btn btn-primary btn-sm" onClick={() => selectStage(1)}>
-                  Inspect Agent Fix Proposal
+                  Next: Target Fix
                 </button>
               </div>
             </div>
           ) : stage === 1 ? (
             <div className="workbench-split">
               <div>
-                <h3 className="sub-h3" style={{ color: 'var(--dark-ink)', marginBottom: '12px' }}>
-                  {activeScenario.agentProposalTitle}
-                </h3>
-
-                <pre className="code-block-dark">
-                  <code>{activeScenario.agentProposalCode}</code>
+                <pre className="code-block-dark" style={{ marginBottom: '12px' }}>
+                  <code>{active.agentProposalCode}</code>
                 </pre>
-
-                <p style={{ margin: 0, color: 'var(--dark-ink-secondary)', fontSize: '0.93rem' }}>
-                  {activeScenario.agentRationale}
+                <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--dark-ink-secondary)' }}>
+                  Internet-facing Tier-0 clusters stage first. Zero changes touch live clusters until approved.
                 </p>
               </div>
 
               <div className="metric-well">
-                <div style={{ fontSize: '0.78rem', color: 'var(--dark-ink-muted)', marginBottom: '6px' }}>
-                  Proposing Non-Human Identity
+                <div className="mono" style={{ fontSize: '0.76rem', color: 'var(--accent-light)', marginBottom: '10px' }}>
+                  {active.agentIdentity}
                 </div>
-                <p className="mono" style={{ fontSize: '0.8rem', margin: '0 0 14px', color: 'var(--accent-light)' }}>
-                  {activeScenario.agentIdentity}
+                <p style={{ margin: '0 0 16px', fontSize: '0.86rem', color: 'var(--dark-ink-secondary)' }}>
+                  Zero cluster keys. Agent cannot approve its own change.
                 </p>
-                <p style={{ fontSize: '0.88rem', color: 'var(--dark-ink-secondary)', margin: '0 0 18px', lineHeight: 1.55 }}>
-                  The agent mutates only permitted configuration fields inside ConfigHub. It holds zero cluster
-                  credentials and cannot approve its own change.
-                </p>
-
                 <button type="button" className="btn btn-primary btn-sm" onClick={() => selectStage(2)}>
-                  Stage Gradual Canary Rollout
+                  Next: Canary Rings
                 </button>
               </div>
             </div>
@@ -219,15 +187,15 @@ export function VulnWorkbench() {
                   className={`btn btn-sm ${ringMode === 'ring0-ok' ? 'btn-primary' : 'btn-dark-secondary'}`}
                   onClick={() => setRingMode('ring0-ok')}
                 >
-                  1. Verify Ring 0 Canary
+                  Ring 0 Healthy
                 </button>
 
                 <button
                   type="button"
-                  className={`btn btn-sm ${ringMode === 'ring1-isolated-rollback' ? 'btn-primary' : 'btn-dark-secondary'}`}
-                  onClick={() => setRingMode('ring1-isolated-rollback')}
+                  className={`btn btn-sm ${ringMode === 'ring1-rollback' ? 'btn-primary' : 'btn-dark-secondary'}`}
+                  onClick={() => setRingMode('ring1-rollback')}
                 >
-                  2. Simulate Ring 1 Health Failure (Single-Cluster Rollback)
+                  Simulate Ring 1 Failure (Single-Cluster Rollback)
                 </button>
 
                 <button
@@ -235,110 +203,100 @@ export function VulnWorkbench() {
                   className={`btn btn-sm ${ringMode === 'complete' ? 'btn-primary' : 'btn-dark-secondary'}`}
                   onClick={() => setRingMode('complete')}
                 >
-                  3. Complete Clean Rollout
+                  Complete Fleet Rollout
                 </button>
               </div>
 
               <div className="ring-grid">
-                <div className={`ring-cell ${ringMode !== 'ready' ? 'ring-cell-ok' : ''}`}>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--dark-ink-muted)', marginBottom: '6px' }}>
-                    Ring 0 · Canary (Tier-0)
+                <div className="ring-cell ring-cell-ok">
+                  <div className="mono" style={{ fontSize: '0.75rem', color: 'var(--dark-ink-muted)', marginBottom: '6px' }}>
+                    Ring 0 · {active.targets[0]?.cluster}
                   </div>
-                  <p className="mono" style={{ margin: '0 0 10px', color: 'var(--dark-ink)', fontSize: '0.88rem' }}>
-                    {activeScenario.targets[0]?.cluster}
-                  </p>
-                  <span className="badge badge-dark-ok">{ring0Status}</span>
-                  <p style={{ margin: '10px 0 0', fontSize: '0.84rem', color: 'var(--dark-ink-secondary)' }}>
-                    P99 latency nominal, 0 crash loops across 120s observe window.
+                  <span className="badge badge-dark-ok">Healthy · Patched</span>
+                  <p style={{ margin: '10px 0 0', fontSize: '0.83rem', color: 'var(--dark-ink-secondary)' }}>
+                    P99 nominal across 120s health gate.
                   </p>
                 </div>
 
                 <div
                   className={`ring-cell ${
-                    ringMode === 'ring1-isolated-rollback'
-                      ? 'ring-cell-fail'
-                      : ringMode === 'complete'
-                        ? 'ring-cell-ok'
-                        : ''
+                    ringMode === 'ring1-rollback' ? 'ring-cell-fail' : ringMode === 'complete' ? 'ring-cell-ok' : ''
                   }`}
                 >
-                  <div style={{ fontSize: '0.78rem', color: 'var(--dark-ink-muted)', marginBottom: '6px' }}>
-                    Ring 1 · Regional Wave
+                  <div className="mono" style={{ fontSize: '0.75rem', color: 'var(--dark-ink-muted)', marginBottom: '6px' }}>
+                    Ring 1 · {active.targets[1]?.cluster}
                   </div>
-                  <p className="mono" style={{ margin: '0 0 10px', color: 'var(--dark-ink)', fontSize: '0.88rem' }}>
-                    {activeScenario.targets[1]?.cluster}
-                  </p>
                   <span
                     className={`badge ${
-                      ringMode === 'ring1-isolated-rollback'
+                      ringMode === 'ring1-rollback'
                         ? 'badge-dark-deny'
                         : ringMode === 'complete'
                           ? 'badge-dark-ok'
                           : 'badge-dark-warn'
                     }`}
                   >
-                    {ring1Status}
+                    {ringMode === 'ring1-rollback'
+                      ? 'Reverted Alone'
+                      : ringMode === 'complete'
+                        ? 'Healthy · Patched'
+                        : 'Queued'}
                   </span>
-                  <p style={{ margin: '10px 0 0', fontSize: '0.84rem', color: 'var(--dark-ink-secondary)' }}>
-                    {ringMode === 'ring1-isolated-rollback'
-                      ? '5xx spike detected at +28s. ConfigHub reverted ONLY this cluster to its prior signed OCI digest; Ring 0 remains patched.'
-                      : 'Queued behind Ring 0 automated metric gate before rollout.'}
+                  <p style={{ margin: '10px 0 0', fontSize: '0.83rem', color: 'var(--dark-ink-secondary)' }}>
+                    {ringMode === 'ring1-rollback'
+                      ? '5xx spike caught. Only this cluster reverted; Ring 0 stays patched.'
+                      : 'Waits for Ring 0 health verification.'}
                   </p>
                 </div>
 
                 <div className={`ring-cell ${ringMode === 'complete' ? 'ring-cell-ok' : ''}`}>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--dark-ink-muted)', marginBottom: '6px' }}>
-                    Ring 2 · Remaining Targets
+                  <div className="mono" style={{ fontSize: '0.75rem', color: 'var(--dark-ink-muted)', marginBottom: '6px' }}>
+                    Ring 2 · {active.targets[2]?.cluster}
                   </div>
-                  <p className="mono" style={{ margin: '0 0 10px', color: 'var(--dark-ink)', fontSize: '0.88rem' }}>
-                    {activeScenario.targets[2]?.cluster} (+{Math.max(activeScenario.affectedClusters - 3, 1)} clusters)
-                  </p>
                   <span className={`badge ${ringMode === 'complete' ? 'badge-dark-ok' : 'badge-dark-warn'}`}>
-                    {ring2Status}
+                    {ringMode === 'ring1-rollback'
+                      ? 'Auto-Paused'
+                      : ringMode === 'complete'
+                        ? 'Healthy · Patched'
+                        : 'Waiting'}
                   </span>
-                  <p style={{ margin: '10px 0 0', fontSize: '0.84rem', color: 'var(--dark-ink-secondary)' }}>
-                    {ringMode === 'ring1-isolated-rollback'
-                      ? 'Automatic circuit breaker stopped promotion before broader fleet impact.'
-                      : 'Remaining exposed targets patched with zero unexposed cluster churn.'}
+                  <p style={{ margin: '10px 0 0', fontSize: '0.83rem', color: 'var(--dark-ink-secondary)' }}>
+                    {ringMode === 'ring1-rollback'
+                      ? 'Circuit breaker halted promotion with zero blast radius.'
+                      : 'Remaining exposed clusters only.'}
                   </p>
                 </div>
               </div>
 
-              <div style={{ marginTop: '18px' }}>
+              <div style={{ marginTop: '16px' }}>
                 <button type="button" className="btn btn-primary btn-sm" onClick={() => selectStage(3)}>
-                  Inspect Immutable Audit Receipt
+                  Next: Audit Receipt
                 </button>
               </div>
             </div>
           ) : (
             <div className="workbench-split">
-              <div>
-                <pre className="code-block-dark" style={{ marginBottom: 0 }}>
-                  <code>
-                    {[
-                      `{`,
-                      `  "advisory": "${activeScenario.cveCode}",`,
-                      `  "proposing_actor": "${activeScenario.agentIdentity}",`,
-                      `  "approval": "${activeScenario.approver}",`,
-                      `  "workloads_patched": ${activeScenario.affectedWorkloads},`,
-                      `  "unexposed_clusters_skipped": ${activeScenario.skippedClusters},`,
-                      `  "oci_release": "${activeScenario.receiptDigest}",`,
-                      `  "reconciler": "${activeScenario.deliveryTool}",`,
-                      `  "elapsed": "${activeScenario.elapsedTime}",`,
-                      `  "break_glass_used": false`,
-                      `}`,
-                    ].join('\n')}
-                  </code>
-                </pre>
-              </div>
+              <pre className="code-block-dark" style={{ marginBottom: 0 }}>
+                <code>
+                  {[
+                    `{`,
+                    `  "actor": "${active.agentIdentity}",`,
+                    `  "approval": "${active.approver}",`,
+                    `  "patched_units": ${active.affectedWorkloads},`,
+                    `  "skipped_clusters": ${active.skippedClusters},`,
+                    `  "oci_release": "${active.receiptDigest}",`,
+                    `  "elapsed": "${active.elapsedTime}",`,
+                    `  "break_glass": false`,
+                    `}`,
+                  ].join('\n')}
+                </code>
+              </pre>
 
               <div className="metric-well">
-                <div className="mono" style={{ fontSize: '1.35rem', fontWeight: 600, color: 'var(--ok-dark)', marginBottom: '10px' }}>
-                  {activeScenario.elapsedTime}
+                <div className="mono" style={{ fontSize: '1.75rem', fontWeight: 600, color: 'var(--ok-dark)' }}>
+                  {active.elapsedTime}
                 </div>
-                <p style={{ margin: '0 0 16px', fontSize: '0.88rem', color: 'var(--dark-ink-secondary)', lineHeight: 1.55 }}>
-                  Exportable directly for SOX, SOC 2, DORA, FINRA, and EU AI Act evidence requests. Every rendered
-                  value, agent mutation, and human signature lives in one deterministic record.
+                <p style={{ margin: '6px 0 14px', fontSize: '0.86rem', color: 'var(--dark-ink-secondary)' }}>
+                  Exportable for SOX, SOC 2, DORA, FINRA, and EU AI Act audits.
                 </p>
                 <span className="badge badge-dark-ok">Verified Applied · Zero Drift</span>
               </div>

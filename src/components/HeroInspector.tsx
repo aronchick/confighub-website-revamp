@@ -12,7 +12,7 @@ export function HeroInspector() {
 
     const timer = window.setTimeout(() => {
       setLoading(false);
-    }, 170);
+    }, 160);
 
     return () => {
       window.clearTimeout(timer);
@@ -33,7 +33,7 @@ export function HeroInspector() {
       <div className="instrument-well">
         <div className="instrument-toolbar">
           <div className="toolbar-meta">
-            <strong>chg_4812</strong> · Compare Git PR #4812 against rendered fleet state
+            <strong>PR #4812</strong> · Compare Git diff vs. live fleet state
           </div>
 
           <div className="segmented-control" role="tablist" aria-label="Compare Git PR with ConfigHub rendered view">
@@ -59,50 +59,36 @@ export function HeroInspector() {
           </div>
         </div>
 
-        <div className="instrument-body">
+        <div className="instrument-body" style={{ minHeight: '264px' }}>
           {loading ? (
             <div className="skeleton-stack" aria-busy="true" aria-label="Querying live fleet state">
-              <div className="skeleton-dark" style={{ width: '92%' }} />
-              <div className="skeleton-dark" style={{ width: '100%', height: '120px' }} />
-              <div className="skeleton-dark" style={{ width: '84%', height: '48px' }} />
+              <div className="skeleton-dark" style={{ width: '90%' }} />
+              <div className="skeleton-dark" style={{ width: '100%', height: '100px' }} />
+              <div className="skeleton-dark" style={{ width: '75%' }} />
             </div>
           ) : mode === 'git' ? (
             <div>
               <div className="cmd-line">
                 <span>
                   <span className="cmd-prompt">git diff</span>
-                  charts/platform-ingress/values.yaml
+                  charts/ingress/values.yaml
                 </span>
-                <span style={{ color: 'var(--dark-ink-muted)' }}>+2 / -2 lines</span>
+                <span style={{ color: 'var(--dark-ink-muted)' }}>+1 / -1</span>
               </div>
 
               <div className="diff-box">
-                <div className="diff-row">
-                  <span className="diff-ln">41</span>
-                  <span>controller:</span>
-                </div>
                 <div className="diff-row diff-del">
                   <span className="diff-ln">42</span>
-                  <span>-   imageTag: &quot;1.11.2&quot;</span>
+                  <span>- imageTag: &quot;1.11.2&quot;</span>
                 </div>
                 <div className="diff-row diff-add">
                   <span className="diff-ln">42</span>
-                  <span>+   imageTag: &quot;1.12.4-patched&quot;</span>
-                </div>
-                <div className="diff-row diff-del">
-                  <span className="diff-ln">43</span>
-                  <span>-   timeoutSeconds: 60</span>
-                </div>
-                <div className="diff-row diff-add">
-                  <span className="diff-ln">43</span>
-                  <span>+   timeoutSeconds: 30</span>
+                  <span>+ imageTag: &quot;1.12.4-patched&quot;</span>
                 </div>
               </div>
 
               <div className="notice-dark notice-dark-warn">
-                <strong>Template blindness in code review:</strong> 0 affected clusters enumerated, 0 linked webhook or
-                TLS references verified, and no field-level protection. Approving this pull request mutates an unknown
-                slice of production.
+                <strong>Blind review:</strong> 0 affected clusters listed, 0 linked TLS refs checked, unknown blast radius.
               </div>
             </div>
           ) : (
@@ -110,55 +96,49 @@ export function HeroInspector() {
               <div className="cmd-line">
                 <span>
                   <span className="cmd-prompt">cub</span>
-                  diff --change-set chg_4812 --show-refs --env prod
+                  diff --change-set chg_4812 --show-refs
                 </span>
                 <span style={{ color: 'var(--ok-dark)' }}>284 units · 14 clusters · 0.34s</span>
               </div>
 
-              <div style={{ overflowX: 'auto' }}>
-                <table className="data-table-dark">
-                  <thead>
-                    <tr>
-                      <th>Cluster</th>
-                      <th>Rendered Workload Mutation</th>
-                      <th>Cross-Resource Links</th>
-                      <th>Policy Gate</th>
-                    </tr>
-                  </thead>
+              <table className="data-table-dark" style={{ marginBottom: '12px' }}>
+                <thead>
+                  <tr>
+                    <th>Cluster</th>
+                    <th>Workload</th>
+                    <th>Rendered Change</th>
+                    <th>Gate</th>
+                  </tr>
+                </thead>
 
-                  <tbody>
-                    {HERO_IMPACT_ROWS.map((row) => (
-                      <tr key={row.cluster}>
-                        <td className="mono" style={{ color: 'var(--dark-ink)' }}>
-                          {row.cluster}
-                        </td>
-                        <td>
-                          <strong style={{ color: 'var(--dark-ink)', fontWeight: 600 }}>{row.workload}</strong>
-                          <div className="mono" style={{ fontSize: '0.74rem', color: 'var(--dark-ink-muted)' }}>
-                            {row.changeSummary}
-                          </div>
-                        </td>
-                        <td style={{ fontSize: '0.8rem' }}>{row.crossRefStatus}</td>
-                        <td>
-                          <span className={`badge badge-dark-${row.gateTone}`}>{row.gateLabel}</span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                <tbody>
+                  {HERO_IMPACT_ROWS.map((row) => (
+                    <tr key={row.cluster}>
+                      <td className="mono" style={{ color: 'var(--dark-ink)' }}>
+                        {row.cluster}
+                      </td>
+                      <td style={{ color: 'var(--dark-ink)', fontWeight: 500 }}>{row.workload}</td>
+                      <td className="mono" style={{ fontSize: '0.76rem' }}>
+                        {row.mutation}
+                      </td>
+                      <td>
+                        <span className={`badge badge-dark-${row.gateTone}`}>{row.gateLabel}</span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
 
               <div className="notice-dark notice-dark-ok">
-                <strong>Full blast radius visible before apply:</strong> 284 rendered workloads verified, 3 linked
-                webhook references reconciled, 1 locked service-account field preserved, staged for Ring 0 canary.
+                <strong>284 workloads previewed before apply:</strong> 3 linked refs synced, 1 compliance field locked.
               </div>
             </div>
           )}
         </div>
 
         <div className="instrument-footer-strip">
-          <span>3,000,000+ live settings indexed across a typical 200-cluster fleet</span>
-          <span>12% of Helm fields silently cross-reference another resource · &lt;60s audited release</span>
+          <span>3M+ live settings queryable like a database</span>
+          <span>12% of Helm fields cross-reference another resource · &lt;60s audited fix</span>
         </div>
       </div>
     </div>

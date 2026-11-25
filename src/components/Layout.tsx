@@ -138,13 +138,12 @@ export function Layout({ currentPath, onNavigate, children }: LayoutArgs) {
                 style={{
                   margin: '0 0 14px',
                   color: 'var(--dark-ink-secondary)',
-                  maxWidth: '38ch',
+                  maxWidth: '34ch',
                   fontSize: '0.875rem',
                   lineHeight: 1.58,
                 }}
               >
-                The governed database for live production configuration. Built by the co-creators of Kubernetes and
-                GitOps so teams and AI agents can ship changes safely at machine speed.
+                Agentic GitOps. Live configuration as a governed database for teams and AI agents.
               </p>
               <span className="mono" style={{ fontSize: '0.75rem', color: 'var(--dark-ink-muted)' }}>
                 hello@confighub.com · security@confighub.com

@@ -36,9 +36,9 @@ export function PolicySandbox() {
       <div className="instrument-well">
         <div className="instrument-toolbar">
           <div className="toolbar-meta">
-            <strong>Policy Engine Sandbox</strong> · Select a proposed agent mutation to inspect deterministic gating
+            <strong>Policy Sandbox</strong> · Click an agent mutation to test deterministic locks
           </div>
-          <span className="badge badge-dark-ok">Deterministic Core · Zero LLM Egress</span>
+          <span className="badge badge-dark-ok">Zero LLM Egress</span>
         </div>
 
         <div className="sandbox-grid">
@@ -67,7 +67,7 @@ export function PolicySandbox() {
                   </span>
                   <span className={`badge badge-dark-${item.tone}`}>{item.verdict}</span>
                 </div>
-                <strong style={{ display: 'block', fontSize: '0.9rem', color: 'var(--dark-ink)', fontWeight: 500 }}>
+                <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--dark-ink)', fontWeight: 500 }}>
                   {item.actionTitle}
                 </strong>
               </button>
@@ -77,26 +77,13 @@ export function PolicySandbox() {
           <div className="sandbox-right">
             {loading ? (
               <div className="skeleton-stack" aria-busy="true" aria-label="Evaluating policy rules">
-                <div className="skeleton-dark" style={{ width: '58%' }} />
-                <div className="skeleton-dark" style={{ width: '96%', height: '42px' }} />
-                <div className="skeleton-dark" style={{ width: '88%' }} />
-                <div className="skeleton-dark" style={{ width: '74%' }} />
+                <div className="skeleton-dark" style={{ width: '55%' }} />
+                <div className="skeleton-dark" style={{ width: '95%', height: '38px' }} />
+                <div className="skeleton-dark" style={{ width: '82%' }} />
               </div>
             ) : (
               <div>
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '12px',
-                    marginBottom: '12px',
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  <span className="mono" style={{ fontSize: '0.78rem', color: 'var(--dark-ink-secondary)' }}>
-                    {activeCase.targetPath}
-                  </span>
+                <div style={{ marginBottom: '12px' }}>
                   <span className={`badge badge-dark-${activeCase.tone}`}>{activeCase.verdict}</span>
                 </div>
 
@@ -107,22 +94,9 @@ export function PolicySandbox() {
                   </span>
                 </div>
 
-                <p style={{ margin: '0 0 16px', fontSize: '0.93rem', color: 'var(--dark-ink)', lineHeight: 1.58 }}>
-                  {activeCase.explanation}
+                <p style={{ margin: '0 0 16px', fontSize: '0.94rem', color: 'var(--dark-ink)', lineHeight: 1.55 }}>
+                  {activeCase.summary}
                 </p>
-
-                <div style={{ borderTop: '1px solid var(--dark-rule)', paddingTop: '12px', marginBottom: '14px' }}>
-                  <div className="mono" style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--dark-ink-muted)' }}>
-                    Policy Evaluation Trace
-                  </div>
-                  <ol style={{ margin: '8px 0 0', paddingLeft: '18px', color: 'var(--dark-ink-secondary)', fontSize: '0.86rem' }}>
-                    {activeCase.checksRun.map((line) => (
-                      <li key={line} style={{ marginBottom: '5px' }}>
-                        {line}
-                      </li>
-                    ))}
-                  </ol>
-                </div>
 
                 <div className={`notice-dark notice-dark-${activeCase.tone} mono`} style={{ fontSize: '0.75rem' }}>
                   {activeCase.auditEntry}
