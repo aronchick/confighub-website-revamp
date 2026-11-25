@@ -27,7 +27,7 @@ export function VulnWorkbench() {
 
     const timer = window.setTimeout(() => {
       setLoading(false);
-    }, 160);
+    }, 150);
 
     return () => {
       window.clearTimeout(timer);
@@ -58,9 +58,9 @@ export function VulnWorkbench() {
   };
 
   return (
-    <div className="instrument-shell" id="workbench" aria-label="Interactive vulnerability remediation workbench">
-      <div className="instrument-well">
-        <div className="instrument-toolbar">
+    <div className="product-mat" id="workbench" aria-label="Interactive vulnerability remediation workbench">
+      <div className="app-window">
+        <div className="app-header">
           <div className="scenario-bar" role="tablist" aria-label="Select vulnerability scenario">
             {REMEDIATION_SCENARIOS.map((item) => (
               <button
@@ -76,7 +76,9 @@ export function VulnWorkbench() {
             ))}
           </div>
 
-          <span className="badge badge-dark-accent">{active.cveCode}</span>
+          <span className="mono" style={{ fontSize: '0.78rem', fontWeight: 500, color: 'var(--accent)' }}>
+            {active.cveCode}
+          </span>
         </div>
 
         <div className="stage-rail" role="tablist" aria-label="Remediation workflow stages">
@@ -92,32 +94,35 @@ export function VulnWorkbench() {
                 className={`stage-tab ${stage === typedIdx ? 'active' : ''}`}
                 onClick={() => selectStage(typedIdx)}
               >
-                <span className="stage-step-num">Step {item.num}</span>
+                <span className="stage-step-num">{item.num}</span>
                 <span className="stage-step-label">{item.title}</span>
               </button>
             );
           })}
         </div>
 
-        <div className="instrument-body" style={{ minHeight: '280px' }}>
+        <div className="app-body" style={{ minHeight: '286px' }}>
           {loading ? (
             <div className="skeleton-stack" aria-busy="true" aria-label="Loading stage output">
-              <div className="skeleton-dark" style={{ width: '80%' }} />
-              <div className="skeleton-dark" style={{ width: '100%', height: '84px' }} />
-              <div className="skeleton-dark" style={{ width: '65%' }} />
+              <div className="skeleton-bar" style={{ width: '80%' }} />
+              <div className="skeleton-bar" style={{ width: '100%', height: '84px' }} />
+              <div className="skeleton-bar" style={{ width: '65%' }} />
             </div>
           ) : stage === 0 ? (
             <div className="workbench-split">
               <div>
-                <p style={{ margin: '0 0 10px', fontSize: '0.88rem', color: 'var(--dark-ink-secondary)' }}>
-                  <strong style={{ color: 'var(--accent-light)' }}>Input:</strong> {active.scannerInput}
+                <p style={{ margin: '0 0 12px', fontSize: '0.9rem', color: 'var(--ink-2)' }}>
+                  <strong style={{ color: 'var(--ink)' }}>Trigger:</strong> {active.scannerInput}
                 </p>
 
-                <pre className="code-block-dark">
-                  <code>{`$ ${active.queryCommand}`}</code>
-                </pre>
+                <div className="query-bar">
+                  <span>
+                    <span className="query-label">Query</span>
+                    {active.queryCommand}
+                  </span>
+                </div>
 
-                <table className="data-table-dark" style={{ marginBottom: 0 }}>
+                <table className="data-table" style={{ marginBottom: 0 }}>
                   <thead>
                     <tr>
                       <th>Cluster</th>
@@ -130,13 +135,15 @@ export function VulnWorkbench() {
                   <tbody>
                     {active.targets.map((target) => (
                       <tr key={target.cluster}>
-                        <td className="mono" style={{ color: 'var(--dark-ink)' }}>
+                        <td className="mono" style={{ color: 'var(--ink)', fontSize: '0.8rem' }}>
                           {target.cluster}
                         </td>
                         <td>{target.tier}</td>
-                        <td className="mono">{target.liveValue}</td>
+                        <td className="mono" style={{ fontSize: '0.78rem' }}>
+                          {target.liveValue}
+                        </td>
                         <td>
-                          <span className="badge badge-dark-warn">{target.ring}</span>
+                          <span className="tag">{target.ring}</span>
                         </td>
                       </tr>
                     ))}
@@ -144,12 +151,11 @@ export function VulnWorkbench() {
                 </table>
               </div>
 
-              <div className="metric-well">
-                <div className="mono" style={{ fontSize: '1.85rem', fontWeight: 600, color: 'var(--dark-ink)' }}>
-                  {active.affectedWorkloads} units
-                </div>
-                <p style={{ margin: '6px 0 18px', fontSize: '0.86rem', color: 'var(--dark-ink-secondary)' }}>
-                  Across {active.affectedClusters} clusters. {active.skippedClusters} healthy clusters untouched.
+              <div className="summary-well">
+                <div className="summary-stat">{active.affectedWorkloads} units</div>
+                <p className="body-copy" style={{ margin: '8px 0 20px', fontSize: '0.88rem' }}>
+                  Across {active.affectedClusters} exposed clusters. {active.skippedClusters} healthy clusters remain
+                  untouched.
                 </p>
                 <button type="button" className="btn btn-primary btn-sm" onClick={() => selectStage(1)}>
                   Next: Target Fix
@@ -159,20 +165,20 @@ export function VulnWorkbench() {
           ) : stage === 1 ? (
             <div className="workbench-split">
               <div>
-                <pre className="code-block-dark" style={{ marginBottom: '12px' }}>
+                <pre className="code-sheet" style={{ marginBottom: '12px' }}>
                   <code>{active.agentProposalCode}</code>
                 </pre>
-                <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--dark-ink-secondary)' }}>
-                  Internet-facing Tier-0 clusters stage first. Zero changes touch live clusters until approved.
+                <p className="body-copy" style={{ fontSize: '0.9rem' }}>
+                  Internet-facing Tier-0 clusters stage first. Zero changes reach live clusters until approved.
                 </p>
               </div>
 
-              <div className="metric-well">
-                <div className="mono" style={{ fontSize: '0.76rem', color: 'var(--accent-light)', marginBottom: '10px' }}>
+              <div className="summary-well">
+                <div className="mono" style={{ fontSize: '0.76rem', color: 'var(--accent)', marginBottom: '10px' }}>
                   {active.agentIdentity}
                 </div>
-                <p style={{ margin: '0 0 16px', fontSize: '0.86rem', color: 'var(--dark-ink-secondary)' }}>
-                  Zero cluster keys. Agent cannot approve its own change.
+                <p className="body-copy" style={{ marginBottom: '18px', fontSize: '0.88rem' }}>
+                  Zero cluster keys. Scoped OIDC identity cannot approve its own mutation.
                 </p>
                 <button type="button" className="btn btn-primary btn-sm" onClick={() => selectStage(2)}>
                   Next: Canary Rings
@@ -184,7 +190,7 @@ export function VulnWorkbench() {
               <div className="ring-controls">
                 <button
                   type="button"
-                  className={`btn btn-sm ${ringMode === 'ring0-ok' ? 'btn-primary' : 'btn-dark-secondary'}`}
+                  className={`btn btn-sm ${ringMode === 'ring0-ok' ? 'btn-primary' : 'btn-secondary'}`}
                   onClick={() => setRingMode('ring0-ok')}
                 >
                   Ring 0 Healthy
@@ -192,7 +198,7 @@ export function VulnWorkbench() {
 
                 <button
                   type="button"
-                  className={`btn btn-sm ${ringMode === 'ring1-rollback' ? 'btn-primary' : 'btn-dark-secondary'}`}
+                  className={`btn btn-sm ${ringMode === 'ring1-rollback' ? 'btn-primary' : 'btn-secondary'}`}
                   onClick={() => setRingMode('ring1-rollback')}
                 >
                   Simulate Ring 1 Failure (Single-Cluster Rollback)
@@ -200,7 +206,7 @@ export function VulnWorkbench() {
 
                 <button
                   type="button"
-                  className={`btn btn-sm ${ringMode === 'complete' ? 'btn-primary' : 'btn-dark-secondary'}`}
+                  className={`btn btn-sm ${ringMode === 'complete' ? 'btn-primary' : 'btn-secondary'}`}
                   onClick={() => setRingMode('complete')}
                 >
                   Complete Fleet Rollout
@@ -209,12 +215,15 @@ export function VulnWorkbench() {
 
               <div className="ring-grid">
                 <div className="ring-cell ring-cell-ok">
-                  <div className="mono" style={{ fontSize: '0.75rem', color: 'var(--dark-ink-muted)', marginBottom: '6px' }}>
+                  <div className="mono" style={{ fontSize: '0.75rem', color: 'var(--ink-muted)', marginBottom: '8px' }}>
                     Ring 0 · {active.targets[0]?.cluster}
                   </div>
-                  <span className="badge badge-dark-ok">Healthy · Patched</span>
-                  <p style={{ margin: '10px 0 0', fontSize: '0.83rem', color: 'var(--dark-ink-secondary)' }}>
-                    P99 nominal across 120s health gate.
+                  <span className="tag tag-ok">
+                    <span className="tag-dot" aria-hidden="true" />
+                    Healthy · Patched
+                  </span>
+                  <p style={{ margin: '10px 0 0', fontSize: '0.85rem', color: 'var(--ink-2)' }}>
+                    P99 latency nominal across 120s health gate.
                   </p>
                 </div>
 
@@ -223,43 +232,41 @@ export function VulnWorkbench() {
                     ringMode === 'ring1-rollback' ? 'ring-cell-fail' : ringMode === 'complete' ? 'ring-cell-ok' : ''
                   }`}
                 >
-                  <div className="mono" style={{ fontSize: '0.75rem', color: 'var(--dark-ink-muted)', marginBottom: '6px' }}>
+                  <div className="mono" style={{ fontSize: '0.75rem', color: 'var(--ink-muted)', marginBottom: '8px' }}>
                     Ring 1 · {active.targets[1]?.cluster}
                   </div>
                   <span
-                    className={`badge ${
-                      ringMode === 'ring1-rollback'
-                        ? 'badge-dark-deny'
-                        : ringMode === 'complete'
-                          ? 'badge-dark-ok'
-                          : 'badge-dark-warn'
+                    className={`tag ${
+                      ringMode === 'ring1-rollback' ? 'tag-deny' : ringMode === 'complete' ? 'tag-ok' : ''
                     }`}
                   >
+                    <span className="tag-dot" aria-hidden="true" />
                     {ringMode === 'ring1-rollback'
                       ? 'Reverted Alone'
                       : ringMode === 'complete'
                         ? 'Healthy · Patched'
                         : 'Queued'}
                   </span>
-                  <p style={{ margin: '10px 0 0', fontSize: '0.83rem', color: 'var(--dark-ink-secondary)' }}>
+                  <p style={{ margin: '10px 0 0', fontSize: '0.85rem', color: 'var(--ink-2)' }}>
                     {ringMode === 'ring1-rollback'
                       ? '5xx spike caught. Only this cluster reverted; Ring 0 stays patched.'
-                      : 'Waits for Ring 0 health verification.'}
+                      : 'Waits for Ring 0 health verification before pulling.'}
                   </p>
                 </div>
 
                 <div className={`ring-cell ${ringMode === 'complete' ? 'ring-cell-ok' : ''}`}>
-                  <div className="mono" style={{ fontSize: '0.75rem', color: 'var(--dark-ink-muted)', marginBottom: '6px' }}>
+                  <div className="mono" style={{ fontSize: '0.75rem', color: 'var(--ink-muted)', marginBottom: '8px' }}>
                     Ring 2 · {active.targets[2]?.cluster}
                   </div>
-                  <span className={`badge ${ringMode === 'complete' ? 'badge-dark-ok' : 'badge-dark-warn'}`}>
+                  <span className={`tag ${ringMode === 'complete' ? 'tag-ok' : ''}`}>
+                    <span className="tag-dot" aria-hidden="true" />
                     {ringMode === 'ring1-rollback'
                       ? 'Auto-Paused'
                       : ringMode === 'complete'
                         ? 'Healthy · Patched'
                         : 'Waiting'}
                   </span>
-                  <p style={{ margin: '10px 0 0', fontSize: '0.83rem', color: 'var(--dark-ink-secondary)' }}>
+                  <p style={{ margin: '10px 0 0', fontSize: '0.85rem', color: 'var(--ink-2)' }}>
                     {ringMode === 'ring1-rollback'
                       ? 'Circuit breaker halted promotion with zero blast radius.'
                       : 'Remaining exposed clusters only.'}
@@ -267,7 +274,7 @@ export function VulnWorkbench() {
                 </div>
               </div>
 
-              <div style={{ marginTop: '16px' }}>
+              <div style={{ marginTop: '18px' }}>
                 <button type="button" className="btn btn-primary btn-sm" onClick={() => selectStage(3)}>
                   Next: Audit Receipt
                 </button>
@@ -275,7 +282,7 @@ export function VulnWorkbench() {
             </div>
           ) : (
             <div className="workbench-split">
-              <pre className="code-block-dark" style={{ marginBottom: 0 }}>
+              <pre className="code-sheet" style={{ marginBottom: 0 }}>
                 <code>
                   {[
                     `{`,
@@ -291,14 +298,17 @@ export function VulnWorkbench() {
                 </code>
               </pre>
 
-              <div className="metric-well">
-                <div className="mono" style={{ fontSize: '1.75rem', fontWeight: 600, color: 'var(--ok-dark)' }}>
+              <div className="summary-well">
+                <div className="summary-stat" style={{ color: 'var(--ok-ink)' }}>
                   {active.elapsedTime}
                 </div>
-                <p style={{ margin: '6px 0 14px', fontSize: '0.86rem', color: 'var(--dark-ink-secondary)' }}>
-                  Exportable for SOX, SOC 2, DORA, FINRA, and EU AI Act audits.
+                <p className="body-copy" style={{ margin: '8px 0 16px', fontSize: '0.88rem' }}>
+                  Exportable for SOX, SOC 2, DORA, FINRA, and EU AI Act change audits.
                 </p>
-                <span className="badge badge-dark-ok">Verified Applied · Zero Drift</span>
+                <span className="tag tag-ok">
+                  <span className="tag-dot" aria-hidden="true" />
+                  Verified Applied · Zero Drift
+                </span>
               </div>
             </div>
           )}

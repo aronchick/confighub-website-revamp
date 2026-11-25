@@ -44,7 +44,7 @@ export function Layout({ currentPath, onNavigate, children }: LayoutArgs) {
               navigateAndClose('/');
             }}
           >
-            <img src={assetUrl('/assets/logo.svg')} alt="ConfigHub" />
+            <img src={assetUrl('/assets/logo-dark.svg')} alt="ConfigHub" />
           </a>
 
           <nav className="nav-desktop" aria-label="Primary navigation">
@@ -69,7 +69,7 @@ export function Layout({ currentPath, onNavigate, children }: LayoutArgs) {
               href="https://docs.confighub.com"
               target="_blank"
               rel="noreferrer"
-              className="btn btn-dark-secondary btn-sm"
+              className="btn btn-secondary btn-sm"
             >
               Read Docs
             </a>
@@ -112,7 +112,7 @@ export function Layout({ currentPath, onNavigate, children }: LayoutArgs) {
               href="https://docs.confighub.com"
               target="_blank"
               rel="noreferrer"
-              className="btn btn-dark-secondary btn-sm"
+              className="btn btn-secondary btn-sm"
             >
               Read Docs
             </a>
@@ -137,15 +137,15 @@ export function Layout({ currentPath, onNavigate, children }: LayoutArgs) {
               <p
                 style={{
                   margin: '0 0 14px',
-                  color: 'var(--dark-ink-secondary)',
+                  color: 'var(--charcoal-ink-2)',
                   maxWidth: '34ch',
-                  fontSize: '0.875rem',
+                  fontSize: '0.88rem',
                   lineHeight: 1.58,
                 }}
               >
                 Agentic GitOps. Live configuration as a governed database for teams and AI agents.
               </p>
-              <span className="mono" style={{ fontSize: '0.75rem', color: 'var(--dark-ink-muted)' }}>
+              <span className="mono" style={{ fontSize: '0.76rem', color: 'var(--charcoal-muted)' }}>
                 hello@confighub.com · security@confighub.com
               </span>
             </div>

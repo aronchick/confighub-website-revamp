@@ -8,18 +8,16 @@ export function LegalPage({ kind }: LegalPageArgs) {
       <>
         <section className="band-paper page-opening">
           <div className="wrap">
-            <div className="rail-frame-paper">
-              <h1 className="display-h1">Terms of Service</h1>
-              <p className="mono" style={{ fontSize: '0.82rem', color: 'var(--paper-ink-muted)', margin: 0 }}>
-                ConfigHub, Inc. · Effective November 2026
-              </p>
-            </div>
+            <h1 className="display-h1">Terms of Service</h1>
+            <p className="mono" style={{ fontSize: '0.82rem', color: 'var(--ink-muted)', margin: 0 }}>
+              ConfigHub, Inc. · Effective November 2026
+            </p>
           </div>
         </section>
 
         <section className="band-paper section-pad">
           <div className="wrap">
-            <div className="rail-frame-paper article-body">
+            <div className="article-body">
               <h2>1. Scope of Service</h2>
               <p>
                 These Terms of Service govern access to ConfigHub Cloud Sandbox, documentation, open-source clients
@@ -62,18 +60,16 @@ export function LegalPage({ kind }: LegalPageArgs) {
     <>
       <section className="band-paper page-opening">
         <div className="wrap">
-          <div className="rail-frame-paper">
-            <h1 className="display-h1">Privacy Policy</h1>
-            <p className="mono" style={{ fontSize: '0.82rem', color: 'var(--paper-ink-muted)', margin: 0 }}>
-              ConfigHub, Inc. · Updated November 2026
-            </p>
-          </div>
+          <h1 className="display-h1">Privacy Policy</h1>
+          <p className="mono" style={{ fontSize: '0.82rem', color: 'var(--ink-muted)', margin: 0 }}>
+            ConfigHub, Inc. · Updated November 2026
+          </p>
         </div>
       </section>
 
       <section className="band-paper section-pad">
         <div className="wrap">
-          <div className="rail-frame-paper article-body">
+          <div className="article-body">
             <h2>1. Data Controller &amp; Data Processor Roles</h2>
             <p>
               ConfigHub, Inc. acts as a Data Controller for account registration and website contact records, and as a

@@ -12,7 +12,7 @@ export function PolicySandbox() {
 
     const timer = window.setTimeout(() => {
       setLoading(false);
-    }, 150);
+    }, 140);
 
     return () => {
       window.clearTimeout(timer);
@@ -32,78 +32,68 @@ export function PolicySandbox() {
   };
 
   return (
-    <div className="instrument-shell" aria-label="Deterministic agent policy sandbox">
-      <div className="instrument-well">
-        <div className="instrument-toolbar">
-          <div className="toolbar-meta">
-            <strong>Policy Sandbox</strong> · Click an agent mutation to test deterministic locks
+    <div className="product-mat" aria-label="Deterministic agent policy inspector">
+      <div className="app-window">
+        <div className="app-header">
+          <div className="app-title">
+            <strong>Policy Lock Evaluator</strong>
           </div>
-          <span className="badge badge-dark-ok">Zero LLM Egress</span>
+          <span className="mono" style={{ fontSize: '0.75rem', color: 'var(--ink-muted)' }}>
+            100% deterministic · zero LLM egress
+          </span>
         </div>
 
-        <div className="sandbox-grid">
-          <div className="sandbox-left" role="tablist" aria-label="Agent action test cases">
-            {POLICY_SANDBOX_CASES.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                role="tab"
-                aria-selected={item.id === selectedId}
-                className={`sandbox-case-btn ${item.id === selectedId ? 'active' : ''}`}
-                onClick={() => handleSelect(item.id)}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '10px',
-                    marginBottom: '6px',
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  <span className="mono" style={{ fontSize: '0.73rem', color: 'var(--dark-ink-muted)' }}>
-                    {item.actor}
-                  </span>
-                  <span className={`badge badge-dark-${item.tone}`}>{item.verdict}</span>
+        <div className="policy-cases" role="tablist" aria-label="Agent action test cases">
+          {POLICY_SANDBOX_CASES.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={item.id === selectedId}
+              className={`policy-case-btn ${item.id === selectedId ? 'active' : ''}`}
+              onClick={() => handleSelect(item.id)}
+            >
+              <div>
+                <div className="mono" style={{ fontSize: '0.72rem', color: 'var(--ink-muted)', marginBottom: '3px' }}>
+                  {item.actor}
                 </div>
-                <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--dark-ink)', fontWeight: 500 }}>
+                <strong style={{ display: 'block', fontSize: '0.9rem', color: 'var(--ink)', fontWeight: 500 }}>
                   {item.actionTitle}
                 </strong>
-              </button>
-            ))}
-          </div>
-
-          <div className="sandbox-right">
-            {loading ? (
-              <div className="skeleton-stack" aria-busy="true" aria-label="Evaluating policy rules">
-                <div className="skeleton-dark" style={{ width: '55%' }} />
-                <div className="skeleton-dark" style={{ width: '95%', height: '38px' }} />
-                <div className="skeleton-dark" style={{ width: '82%' }} />
               </div>
-            ) : (
-              <div>
-                <div style={{ marginBottom: '12px' }}>
-                  <span className={`badge badge-dark-${activeCase.tone}`}>{activeCase.verdict}</span>
-                </div>
+              <span className={`tag ${item.tone === 'deny' ? 'tag-deny' : item.tone === 'ok' ? 'tag-ok' : ''}`}>
+                <span className="tag-dot" aria-hidden="true" />
+                {item.verdict}
+              </span>
+            </button>
+          ))}
+        </div>
 
-                <div className="cmd-line" style={{ marginBottom: '14px' }}>
-                  <span>
-                    <span className="cmd-prompt">$</span>
-                    {activeCase.command}
-                  </span>
-                </div>
-
-                <p style={{ margin: '0 0 16px', fontSize: '0.94rem', color: 'var(--dark-ink)', lineHeight: 1.55 }}>
-                  {activeCase.summary}
-                </p>
-
-                <div className={`notice-dark notice-dark-${activeCase.tone} mono`} style={{ fontSize: '0.75rem' }}>
-                  {activeCase.auditEntry}
-                </div>
+        <div className="policy-result">
+          {loading ? (
+            <div className="skeleton-stack" aria-busy="true" aria-label="Evaluating policy rules">
+              <div className="skeleton-bar" style={{ width: '60%' }} />
+              <div className="skeleton-bar" style={{ width: '95%', height: '36px' }} />
+              <div className="skeleton-bar" style={{ width: '80%' }} />
+            </div>
+          ) : (
+            <div>
+              <div className="query-bar" style={{ marginBottom: '14px' }}>
+                <span>
+                  <span className="query-label">Proposal</span>
+                  {activeCase.command}
+                </span>
               </div>
-            )}
-          </div>
+
+              <p style={{ margin: '0 0 14px', fontSize: '0.94rem', color: 'var(--ink)', lineHeight: 1.55 }}>
+                {activeCase.summary}
+              </p>
+
+              <div className={`callout callout-${activeCase.tone} mono`} style={{ fontSize: '0.75rem' }}>
+                {activeCase.auditEntry}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
